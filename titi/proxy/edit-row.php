@@ -28,11 +28,38 @@ $response=curl_exec($ch);
 curl_close($ch);
 
 $xmlresp=new SimpleXMLElement($response);
-//print($xmlresp->asXML());
+print($xmlresp->asXML());
+print "\n************+\n\n\n";
+//exit;
 
 $xmlresp->registerXPathNamespace("a", "http://www.w3.org/2005/Atom");
 
 $entry=$xmlresp->xpath("a:entry[a:id/text()='".$task["id"]."']"); //book[title/@lang = 'it']
+
+//$xmlresp->registerXPathNamespace("a", "http://www.w3.org/2005/Atom");
+//$xmlresp->registerXPathNamespace("gsx", "http://schemas.google.com/spreadsheets/2006/extended");
+
+//$postlinkentry=$xmlresp->xpath("a:link[@rel='http://schemas.google.com/g/2005#post']/@href"); //book[title/@lang = 'it']
+
+$tmpentry=new SimpleXMLElement($entry[0]->asXML());
+$postlinkentry=$tmpentry->xpath("link[@rel='edit']/@href"); //book[title/@lang = 'it']
+
+
+
+$postLink=$postlinkentry[0];
+
+print $postLink;
+
+
+//$postLink=$_REQUEST["postLink"];
+
+if ($postLink=="") {
+    die("no post link!");
+}
+
+
+//print($postLink);
+//exit;
 
 $headers=array(
     "Content-Type: ".$contentType.";charset=UTF-8",
@@ -78,19 +105,17 @@ $xml->addChild("xmlns:gsx:fecha",$task["date"]);
 //exit;
 
 $entry[0]->addAttribute("xmlns","http://www.w3.org/2005/Atom");
+$entry[0]->addAttribute("xmlns:xmlns:openSearch","http://a9.com/-/spec/opensearchrss/1.0/");
 $entry[0]->addAttribute("xmlns:xmlns:gsx","http://schemas.google.com/spreadsheets/2006/extended");
 
+//xmlns:openSearch=""
 $xml=new SimpleXMLElement($entry[0]->asXML());
-print_r($xmlresp->asXML());
+print_r($xml->asXML());
 
 $access_token=$_REQUEST["access_token"];
-$postLink=$_REQUEST["postLink"];
 $contentType=$_REQUEST["content-type"];
 $worksheetId=$_REQUEST["worksheetId"]; //if post link does not work
 
-if ($postLink=="") {
-    die("no post link!");
-}
 $url = $postLink;
 
 
@@ -98,14 +123,20 @@ $ch2 = curl_init($url);
 $headers=array(
         "Content-Type: ".$contentType.";charset=UTF-8",
         "Authorization: Bearer ".$access_token,
-        "Connection: close"
+        "Content-Length: ".strlen($xml->asXML()."\r\n")//,
+    //        "Connection: close"
         );
-curl_setopt($ch2, CURLOPT_PUT, 1);
-curl_setopt($ch2, CURLOPT_POSTFIELDS, $xml->asXML()); //before: $xml
 
-curl_setopt($ch2, CURLOPT_HEADER, 0);
+curl_setopt($ch2, CURLOPT_URL, $postLink);
+curl_setopt($ch2, CURLOPT_PUT, 1);
+//curl_setopt($ch2, CURLOPT_POST, 1);
+curl_setopt($ch2, CURLOPT_POSTFIELDS, $xml->asXML()."\r\n"); //before: $xml
+
+curl_setopt($ch2, CURLOPT_HEADER, 1);
 curl_setopt($ch2, CURLOPT_HTTPHEADER, $headers);
 curl_setopt($ch2, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch2, CURLOPT_VERBOSE, true);
+//curl_setopt($ch2, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0 );
 
 $response = curl_exec($ch2);
 
