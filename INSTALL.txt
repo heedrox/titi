@@ -1,0 +1,10 @@
+#Lo que he hecho
+#npm install karma karma-jasmine
+#karma init
+
+INSTALATE ESTE PROYECTO:
+- Ignora: AdminLTE y googleplus
+- Añade titi como document root
+- Añade titi-tests como tests resource
+
+
