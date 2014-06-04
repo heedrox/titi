@@ -3,8 +3,10 @@ var GlobalConfiguration = {
     //VARIABLES - to be configured
     CMOFile : "0Aqtho4hHV1PZdEs1cGRJY3hpa2Q5Uk8xMnEtcVBHSnc",
     CMOFile_TAB_PROYECTOS : "PROYECTOS",
-    CLIENT_ID : '674484425334-2ataiidaqs3mvj2aiarqjbhqe2k1evkq.apps.googleusercontent.com',
-    CLIENT_SECRET: 'gLotxL2xJU-JqkV1m2SAOjzf',
+    //CLIENT_ID : '674484425334-2ataiidaqs3mvj2aiarqjbhqe2k1evkq.apps.googleusercontent.com',
+    //CLIENT_SECRET: 'gLotxL2xJU-JqkV1m2SAOjzf',
+    CLIENT_ID : '674484425334-uldqmbmjr5p1me20vl6ctlhgqmp555j9.apps.googleusercontent.com',
+    CLIENT_SECRET: '7q_a-OPifwQxb4OMPBpT14Ue',
 
     //CONSTANTS
     LOCALSTORAGE_GPLUSCODE_ACCESSTOKEN : "com.theinit.cmo.titi.localstorage.accesstoken",
