@@ -14,7 +14,7 @@ var GlobalConfiguration = {
     LOCALSTORAGE_USER: "com.theinit.cmo.titi.localstorage.user",
 
     //GOOGLE APIS (with cors!)
-    URL_OAUTH_TOKEN : '/proxy/oauth2-token.php',
+    URL_OAUTH_TOKEN : 'proxy/oauth2-token.php',
     TIME_OAUTH_REVERIFY : 100000 //time in msecs which we check recurrently
 }
 
