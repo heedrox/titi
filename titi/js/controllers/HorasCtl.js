@@ -34,7 +34,7 @@ HorasCtl.prototype.execute = function() {
 
     $("#horasFechaSelectorDp").unbind("dp.change");
     $("#horasFechaSelectorDp").on("dp.change",function (e) {
-        currentController.loadDay($('#horasFechaSelectorDp').data("DateTimePicker").getDate().toDate());
+        currentController.reloadDay();
     });
 
     $('#horasLeftSelector').unbind("click");
@@ -50,6 +50,13 @@ HorasCtl.prototype.execute = function() {
     $('#horasSaveBtn').click(function() {
         currentController.save();
     });
+}
+
+/**
+ * Reloads the day based on the value of the date of horasFechaSelectorDp
+ */
+HorasCtl.prototype.reloadDay = function() {
+    currentController.loadDay($('#horasFechaSelectorDp').data("DateTimePicker").getDate().toDate());
 }
 
 /**
@@ -90,7 +97,7 @@ HorasCtl.prototype.loadDay = function(date) {
             //ADD KNOWN BOXES
             clientProjects.forEach(function(it) {
                 var clientProject={ client: it.client, project: it.project };
-                console.log(clientProject);
+                //console.log(clientProject);
                 currentController.addBox(clientProject, clientProjectsData[JSON.stringify(clientProject).toLowerCase()], clientProjectsHours[JSON.stringify(clientProject).toLowerCase()]);
             });
 
@@ -272,19 +279,28 @@ HorasCtl.prototype.setHoursLoading = function() {
 HorasCtl.prototype.save = function() {
 
     this.getScreenTasks(function (tasks) {
-        //console.log(tasks);
-        $('#hoursSaveLoading').show();
-        $('#hoursDoneKnob').val(0);
-        $('#hoursDoneKnob').trigger('change');
 
-        currentController.titiService.saveDay(tasks, function(num, total) {
-            //paint progress
-            $('#hoursDoneKnob').val(Math.round(num*100/total));
+        console.log(tasks);
+        if (tasks.length>0) {
+            //console.log(tasks);
+            $('#hoursSaveLoading').show();
+            $('#hoursDoneKnob').val(0);
             $('#hoursDoneKnob').trigger('change');
-        }, function() {
-            //done
-            $('#hoursSaveLoading').hide();
-        });
+
+            currentController.titiService.saveDay(tasks, function(num, total) {
+                //paint progress
+                $('#hoursDoneKnob').val(Math.round(num*100/total));
+                $('#hoursDoneKnob').trigger('change');
+            }, function() {
+                //done
+                $('#hoursSaveLoading').hide();
+                currentController.reloadDay();
+            }, function() {
+                //error!
+                alert('QUE SE DETENGA EL MUNDO! Hemos parado el proceso y los datos no se han guardado. Accede al CMO y guardalo tu mismo, y entra al GIT y colabora con este proyecto aplicando el fix!');
+                $('#hoursSaveLoading').hide();
+            });
+        }
     });
 
 
@@ -302,21 +318,50 @@ HorasCtl.prototype.getScreenTasks=function(callback) {
     var tasks=[];
     var date= $.dateFormat($('#horasFechaSelectorDp').data("DateTimePicker").getDate().toDate());
 
+    var thereWasError=false;
+
     $('div[id^=BOX\\#]').each(function($box) { //foreach client-project
         var cp=$(this).data("clientproject");
         $('.hoursClientProjectTaskBody .rowTask',$(this)).each(function() { //foreach task
-            var hours=GlobalConfiguration.parseFloat($('input[name=hours]', $(this)).val());
-            var task=$('input[name=task]', $(this)).val();
-            //TODO watch out, maybe here i want to delete some info and put it to ZERO! PENDING!
-            if ((hours>0)&&(task!='')) { //if data is filled
-                var originalTask=$(this).data("originalTask");
+            var hours=$('input[name=hours]', $(this)).val().trim();
+            var task=$('input[name=task]', $(this)).val().trim();
+            if ((task!='')&&(hours=='')) {
+                //there is some task, but no hours. I complain
+                alert('OJO: tienes una tarea metida sin horas. Si quieres eliminar la tarea, elimina los campos tarea y descripción. Si quieres poner a cero unas horas, explicitamente ponlas a cero.');
+                $('input[name=hours]', $(this)).focus();
+                thereWasError=true;
+            }
+            var descrip=$('input[name=description]', $(this)).val().trim();
+            var originalTask=$(this).data("originalTask");
+            var hoursstr=$('input[name=hours]', $(this)).val().trim();
+            if (hoursstr=='') {
+                hours=0;
+            } else {
+                hours=GlobalConfiguration.parseFloat(hours);
+            }
+
+            console.log(hours);
+            if ((hours==0)&&(task=='')&&(descrip=='')&&(originalTask!=null)) {
+                //deleting a row
+                tasks.push({
+                    id: (originalTask!=null)?originalTask.id:null,
+                    date: date ,
+                    client: '',
+                    project: '',
+                    task: '',
+                    description: '',
+                    hours: '',
+                    facturable: '',
+                    motivo: ''
+                });
+            } else if ((task!='')&&(hoursstr!='')&&(hours>=0)) { //if data is filled
                 tasks.push({
                     id: (originalTask!=null)?originalTask.id:null,
                     date: date,
                     client: cp.client,
                     project: cp.project,
                     task: task,
-                    description: $('input[name=description]', $(this)).val(),
+                    description: descrip,
                     hours: hours,
                     facturable: $('.checkable', $(this)).prop('checked')?'S':'N',
                     motivo: ''
@@ -325,7 +370,11 @@ HorasCtl.prototype.getScreenTasks=function(callback) {
         });
     });
 
-    callback(tasks);
+    if (!thereWasError) {
+        callback(tasks);
+    } else {
+        callback([]);
+    }
 }
 
 

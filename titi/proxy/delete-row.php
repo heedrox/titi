@@ -23,25 +23,6 @@ if ($postLink=="") {
     die("no post link!");
 }
 
-
-
-substituteNode($entry, "cliente",$task["client"]);
-substituteNode($entry, "proyecto",$task["project"]);
-substituteNode($entry, "tarea",$task["task"]);
-substituteNode($entry, "descripción",$task["description"]);
-substituteNode($entry, "horas",$task["hours"]);
-substituteNode($entry, "facturablesn",$task["facturable"]);
-substituteNode($entry, "motivo",$task["motivo"]);
-substituteNode($entry, "fecha",$task["date"]);
-
-$entry->addAttribute("xmlns","http://www.w3.org/2005/Atom");
-$entry->addAttribute("xmlns:xmlns:openSearch","http://a9.com/-/spec/opensearchrss/1.0/");
-$entry->addAttribute("xmlns:xmlns:gsx","http://schemas.google.com/spreadsheets/2006/extended");
-
-//xmlns:openSearch=""
-$xml=new SimpleXMLElement($entry->asXML());
-//print_r($xml->asXML());
-
 $access_token=$_REQUEST["access_token"];
 $contentType=$_REQUEST["content-type"];
 $worksheetId=$_REQUEST["worksheetId"]; //if post link does not work
@@ -50,17 +31,16 @@ $url = $postLink;
 
 $ch2 = curl_init($url);
 $headers=array(
-        "Content-Type: ".$contentType.";charset=UTF-8",
-        "Authorization: Bearer ".$access_token,
-    //    "Content-Length: ".strlen($xml->asXML()."\r\n")//,
-            "Connection: close"
-        );
+    "Content-Type: ".$contentType.";charset=UTF-8",
+    "Authorization: Bearer ".$access_token,
+    "Connection: close"
+);
 
 curl_setopt($ch2, CURLOPT_URL, $postLink);
 //curl_setopt($ch2, CURLOPT_PUT, 1);
-curl_setopt($ch2, CURLOPT_CUSTOMREQUEST, "PUT");
+curl_setopt($ch2, CURLOPT_CUSTOMREQUEST, "DELETE");
 //curl_setopt($ch2, CURLOPT_POST, 1);
-curl_setopt($ch2, CURLOPT_POSTFIELDS, $xml->asXML()); //before: $xml
+//curl_setopt($ch2, CURLOPT_POSTFIELDS, $xml->asXML()); //before: $xml
 
 curl_setopt($ch2, CURLOPT_HEADER, 1);
 curl_setopt($ch2, CURLOPT_HTTPHEADER, $headers);

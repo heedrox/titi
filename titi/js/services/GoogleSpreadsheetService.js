@@ -102,7 +102,7 @@ GoogleSpreadsheetService.prototype.getHours = function (filter, idUser, callback
         dataType: 'jsonp',
         success: function(data) {
             //console.log(data.feed.entry);
-            console.log(data.feed.link);
+            //console.log(data.feed.link);
             data.feed.link.forEach(function(l) {
                 if (l.rel=="http://schemas.google.com/g/2005#post") {
                     that.postLink= l;
@@ -119,7 +119,7 @@ GoogleSpreadsheetService.prototype.getHours = function (filter, idUser, callback
 }
 
 
-GoogleSpreadsheetService.prototype.addTask = function(worksheetId, task, callback) {
+GoogleSpreadsheetService.prototype.addTask = function(worksheetId, task, callback, callbackError) {
     //setTimeout(function() { callback(); }, 1000);
     $.ajax({
         url:'proxy/add-row.php',
@@ -135,12 +135,12 @@ GoogleSpreadsheetService.prototype.addTask = function(worksheetId, task, callbac
         },
         error: function(errordata) {
             alert('Error saving task!');
-            callback();
+            callbackError();
         }
     });
 }
 
-GoogleSpreadsheetService.prototype.updateTask = function(worksheetId,task, callback) {
+GoogleSpreadsheetService.prototype.updateTask = function(worksheetId,task, callback, callbackError) {
     $.ajax({
         url:'proxy/edit-row.php',
         type:'POST',
@@ -152,12 +152,41 @@ GoogleSpreadsheetService.prototype.updateTask = function(worksheetId,task, callb
             'keyFile' : GlobalConfiguration.CMOFile  },
         success: function(data) {
             //console.log(data.feed.entry);
-            console.log('yea -> callback');
+            //console.log('yea -> callback');
             callback();
         },
         error: function(errordata) {
             alert('Error saving task!');
+            callbackError(errordata);
+        }
+    });
+}
+
+/**
+ * Deletes a row from the CMO file
+ * @param worksheetId
+ * @param task
+ * @param callback
+ * @param callbackError
+ */
+GoogleSpreadsheetService.prototype.deleteTask = function(worksheetId,task, callback, callbackError) {
+    $.ajax({
+        url:'proxy/delete-row.php',
+        type:'POST',
+        data: { 'access_token' : GlobalConfiguration.getAccessToken().access_token,
+            'task': JSON.stringify(task),
+            'postLink' : this.postLink.href,
+            'content-type' : this.postLink.type,
+            'worksheetId' : worksheetId,
+            'keyFile' : GlobalConfiguration.CMOFile  },
+        success: function(data) {
+            //console.log(data.feed.entry);
+            //console.log('yea -> callback');
             callback();
+        },
+        error: function(errordata) {
+            alert('Error saving task!');
+            callbackError(errordata);
         }
     });
 }

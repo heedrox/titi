@@ -104,40 +104,51 @@ TitiService.prototype.getDay = function (day, idUser, callback) {
  * @param callbackProgress
  * @param callbackReady
  */
-TitiService.prototype.saveDay = function (tasks, callbackProgress, callbackReady) {
+TitiService.prototype.saveDay = function (tasks, callbackProgress, callbackReady, callbackError) {
 //we should have this.cachedTasks to check old ids
     var numTasks=tasks.length;
     var numTasksDone=0;
 
     var that=this;
 
+
+    var errorfn=function() {
+        //Stop saving, there was an error!
+        callbackError();
+    }
+
     var done=function() {
         numTasksDone++;
-        console.log('Done: '+numTasksDone);
-        console.log('NumTasks total: '+numTasks);
+        //console.log('Done: '+numTasksDone);
+        //console.log('NumTasks total: '+numTasks);
         if (numTasksDone>=numTasks) {
             callbackReady();
         } else {
             callbackProgress(numTasksDone,numTasks);
-            that.saveTask(tasks[numTasksDone],done);
+            that.saveTask(tasks[numTasksDone],done, errorfn);
         }
     };
 
+
     if (tasks.length>0) {
-        that.saveTask(tasks[0], done);
+        that.saveTask(tasks[0], done, errorfn);
     } else {
         done();
     }
 
 };
 
-TitiService.prototype.saveTask = function(task, done) {
+TitiService.prototype.saveTask = function(task, done, errorfn) {
     if (task.id!=null) {
         //update
-        this.googleSpreadsheetService.updateTask(GlobalConfiguration.CMOFile, task, done);
+        if ((task.task=='')&&(task.description=='')&&(task.hours==0)) {
+            this.googleSpreadsheetService.deleteTask(GlobalConfiguration.CMOFile, task, done, errorfn);
+        } else {
+            this.googleSpreadsheetService.updateTask(GlobalConfiguration.CMOFile, task, done, errorfn);
+        }
     } else {
         //insert
-        this.googleSpreadsheetService.addTask(GlobalConfiguration.CMOFile, task, done);
+        this.googleSpreadsheetService.addTask(GlobalConfiguration.CMOFile, task, done, errorfn);
 
     }
 
