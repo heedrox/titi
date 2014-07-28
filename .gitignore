@@ -2,3 +2,7 @@ titi/.idea/
 titi/.idea/*
 node_modules/
 node_modules/*
+/AdminLTE-master/
+/cordova/
+/titi2/
+/ws-android/

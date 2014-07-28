@@ -24,6 +24,7 @@ if ($postLink=="") {
 }
 
 
+$task["hours"]=str_replace(".",",",$task["hours"]);
 
 substituteNode($entry, "cliente",$task["client"]);
 substituteNode($entry, "proyecto",$task["project"]);
@@ -41,6 +42,7 @@ $entry->addAttribute("xmlns:xmlns:gsx","http://schemas.google.com/spreadsheets/2
 //xmlns:openSearch=""
 $xml=new SimpleXMLElement($entry->asXML());
 //print_r($xml->asXML());
+
 
 $access_token=$_REQUEST["access_token"];
 $contentType=$_REQUEST["content-type"];

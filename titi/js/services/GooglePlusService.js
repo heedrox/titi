@@ -2,24 +2,75 @@ function GooglePlusService() {
 
 }
 
+/**
+ * Gets the URL to redirect in google plus.
+ * If it is a phonegap app, then return the urn:ietf string.
+ * If it is a browser app, then return the current url (without #)
+ * @returns {string}
+ */
 GooglePlusService.prototype.getRedirectUri = function() {
+    if (GlobalConfiguration.isPhoneGap()) {
+      //return 'urn:ietf:wg:oauth:2.0:oob';
+        return 'http://localhost/'
+    }
     return window.location.href.replace('/#','');
 }
 
 GooglePlusService.prototype.startOAuthFlow = function() {
 
+    //http://phonegap-tips.com/articles/google-api-oauth-with-phonegaps-inappbrowser.html
     //if (confirm('COMO FUNCIONA: Ahora se abrirá una pagina para loguearte en google plus. Una vez termines, te dará un código. Copia ese código y pastealo en la ventana que se mostrará a continuación')) {
-    gapi.auth.authorize({
-        client_id: GlobalConfiguration.CLIENT_ID,
-        //redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-        redirect_uri: this.getRedirectUri(),
-        response_type: 'code',
-        scope: 'https://www.googleapis.com/auth/plus.login https://spreadsheets.google.com/feeds',
-        immediate: false
-    });
 
-    //    $('#loginmodal').modal('show');
-    //}
+    if (GlobalConfiguration.isPhoneGap()) {
+
+        var authUrl = 'https://accounts.google.com/o/oauth2/auth?' + $.param({
+            client_id: GlobalConfiguration.getClientID(),
+            redirect_uri: this.getRedirectUri(),
+            response_type: 'code',
+            scope: 'https://www.googleapis.com/auth/plus.login https://spreadsheets.google.com/feeds'
+        });
+
+        var authWindow = window.open(authUrl, '_blank', 'location=no,toolbar=no');
+
+        $(authWindow).on('loadstart', function(e) {
+            var url = e.originalEvent.url;
+
+            var code = /\?code=(.+)$/.exec(url);
+            var error = /\?error=(.+)$/.exec(url);
+
+
+            if (code) {
+                var realcode=$.valueFromStringParam("code",code);
+                currentController.recogerDato(realcode);
+                authWindow.close();
+            }
+
+            if (error) {
+                alert("Error autenticando!: "+error);
+                authWindow.close();
+                window.location.reload();
+            }
+        });
+        //ref.addEventListener('loadstart', function() { alert('start: ' + event.url); });
+        //    $('#loginmodal').modal('show');
+        //}
+
+    } else {
+        //Si es web, se hace un gapi normal, que controla la llamada.
+        //Se sabe que ha terminado porque se refresca la pagina con code=? Se procesa en LoginCtl::execute
+        gapi.auth.authorize({
+            client_id: GlobalConfiguration.getClientID(),
+            //redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+            redirect_uri: this.getRedirectUri(),
+            response_type: 'code',
+            scope: 'https://www.googleapis.com/auth/plus.login https://spreadsheets.google.com/feeds',
+            immediate: false
+        });
+    }
+
+
+
+
 }
 
 
@@ -30,12 +81,13 @@ GooglePlusService.prototype.startOAuthFlow = function() {
  * @param callback
  */
 GooglePlusService.prototype.getTokenFromCode = function(code, callbackFn) {
+    //alert(GlobalConfiguration.getUrlAuthToken());
     $.ajax({
-        url: GlobalConfiguration.URL_OAUTH_TOKEN,
+        url: GlobalConfiguration.getUrlAuthToken(),
         crossDomain: true,
         type:'POST',
-        data: { 'code': code , 'client_id' : GlobalConfiguration.CLIENT_ID,
-            'client_secret' : GlobalConfiguration.CLIENT_SECRET,
+        data: { 'code': code , 'client_id' : GlobalConfiguration.getClientID(),
+            'client_secret' : GlobalConfiguration.getClientSecret(),
             'redirect_uri' : this.getRedirectUri(),
             'grant_type' : 'authorization_code'
         },
@@ -45,6 +97,8 @@ GooglePlusService.prototype.getTokenFromCode = function(code, callbackFn) {
         },
         error : function(error) {
             //GlobalConfiguration.showError(error);
+            alert('buuuu buuu');
+            alert(JSON.stringify(error));
             alert('La clave introducida no es válida, prueba otra vez.');
         }
     });
@@ -66,6 +120,7 @@ GooglePlusService.prototype.getUserFromApi = function(api, callback) {
         },
         error : function(error) {
             //GlobalConfiguration.showError(error);
+            alert(error);
             alert('La clave introducida no es válida, prueba otra vez.');
         }
     });
@@ -94,8 +149,8 @@ GooglePlusService.prototype.verifyToken = function(callbackOk, callbackError) {
         },
         dataType : 'json',
         success : function(data) {
-            if (data.audience!=GlobalConfiguration.CLIENT_ID) {
-                callbackError(error);
+            if (data.audience!=GlobalConfiguration.getClientID()) {
+                callbackError(data);
             } else {
                 callbackOk(data, 0);
             }
@@ -121,11 +176,11 @@ GooglePlusService.prototype.refreshToken = function(callbackOk, callbackError) {
 
     console.log('trying to refresh...');
     $.ajax({
-        url: GlobalConfiguration.URL_OAUTH_TOKEN,
+        url: GlobalConfiguration.getUrlAuthToken(),
         crossDomain: true,
         type:'POST',
-        data: { 'client_id' : GlobalConfiguration.CLIENT_ID,
-            'client_secret' : GlobalConfiguration.CLIENT_SECRET,
+        data: { 'client_id' : GlobalConfiguration.getClientID(),
+            'client_secret' : GlobalConfiguration.getClientSecret(),
             'refresh_token' : GlobalConfiguration.getAccessToken().refresh_token,
             'grant_type' : 'refresh_token'
         },
@@ -141,4 +196,6 @@ GooglePlusService.prototype.refreshToken = function(callbackOk, callbackError) {
         }
     });
 }
+
+
 

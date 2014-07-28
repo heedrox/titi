@@ -7,6 +7,9 @@
  */
 
 $task=json_decode($_REQUEST["tasks"], true); //true means get associative array instead of obj
+
+$task["hours"]=str_replace(".",",",$task["hours"]); //3.5 debe ir como 3,5
+
 $xml = new SimpleXMLElement('<entry/>');
 $xml->addAttribute("xmlns","http://www.w3.org/2005/Atom");
 $xml->addAttribute("xmlns:xmlns:gsx","http://schemas.google.com/spreadsheets/2006/extended");

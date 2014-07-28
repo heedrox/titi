@@ -46,186 +46,301 @@
     </nav>
 </header>
 <div class="wrapper row-offcanvas row-offcanvas-left">
-    <!-- Left side column. contains the logo and sidebar -->
-    <aside class="left-side sidebar-offcanvas">
-        <!-- sidebar: style can be found in sidebar.less -->
-        <section class="sidebar">
-            <!-- Sidebar user panel -->
+<!-- Left side column. contains the logo and sidebar -->
+<aside class="left-side sidebar-offcanvas">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+        <!-- Sidebar user panel -->
 
-            <!-- sidebar menu: : style can be found in sidebar.less -->
-            <ul class="sidebar-menu">
-                <li class="active">
-                    <a href="#inicio" data-toggle="tab" id="iniciolink">
-                        <i class="fa fa-clock-o"></i> <span>Horas</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#settings" data-toggle="tab" id="settingslink">
-                        <i class="fa fa-folder"></i> <span>Ajustes</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" id="cmoLink" target="_blank">
-                        <i class="fa fa-external-link"></i> <span>Abrir CMO</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#logout" id="logout">
-                        <i class="glyphicon glyphicon-log-out"></i> <span>Logout</span>
-                    </a>
-                </li>
+        <!-- sidebar menu: : style can be found in sidebar.less -->
+        <ul class="sidebar-menu">
+            <li class="active">
+                <a href="#inicio" data-toggle="tab" id="iniciolink">
+                    <i class="fa fa-clock-o"></i> <span>Horas</span>
+                </a>
+            </li>
+            <li>
+                <a href="#resumen" data-toggle="tab" id="resumenlink">
+                    <i class="fa fa-calendar-o"></i> <span>Resumen</span>
+                </a>
+            </li>
+            <li>
+                <a href="#settings" data-toggle="tab" id="settingslink">
+                    <i class="fa fa-folder"></i> <span>Ajustes</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" id="cmoLink" target="_blank">
+                    <i class="fa fa-external-link"></i> <span>Abrir CMO</span>
+                </a>
+            </li>
+            <li>
+                <a href="#logout" id="logout">
+                    <i class="glyphicon glyphicon-log-out"></i> <span>Logout</span>
+                </a>
+            </li>
 
-            </ul>
+        </ul>
+    </section>
+    <!-- /.sidebar -->
+</aside>
+
+<div class="tab-content">
+<!-- Right side column. Contains the navbar and content of the page -->
+<div class="tab-pane active" id="inicio">
+    <aside class="right-side ">
+
+
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                ¡A por las horas!
+                <small class="hidden-xs">... que tú puedes</small>
+                <div class="pull-right">
+                    <btn class="btn btn-success btn-sm" id="horasSaveBtn">Guardar</btn>
+
+                </div>
+
+            </h1>
         </section>
-        <!-- /.sidebar -->
-    </aside>
 
-    <div class="tab-content">
-        <!-- Right side column. Contains the navbar and content of the page -->
-        <div class="tab-pane active" id="inicio">
-            <aside class="right-side ">
+        <!-- Main content -->
+        <section class="content">
 
+            <div class="container-fluid" id="logincontainer">
+                <div class="row">
+                    <div id="login" class="text-center">
+                        <a href="#"><img src="img/googlesignin.png" style="max-width:300px"/></a>
+                        <p></p>
 
-                <!-- Content Header (Page header) -->
-                <section class="content-header">
-                    <h1>
-                        ¡A por las horas!
-                        <small>... que tú puedes</small>
-                        <div class="pull-right">
-                            <btn class="btn btn-success btn-sm" id="horasSaveBtn">Guardar</btn>
-
-                        </div>
-
-                    </h1>
-                </section>
-
-                <!-- Main content -->
-                <section class="content">
-
-                    <div class="container-fluid" id="logincontainer">
-                        <div class="row">
-                            <div id="login" class="text-center">
-                                <a href="#"><img src="img/googlesignin.png" style="max-width:300px"/></a>
-                                <p></p>
-
-                            </div>
-
-                        </div>
                     </div>
 
-                    <div class="container-fluid" id="validatingcontainer" style="display:none">
-                        <div class="row text-center">
-                            <div class="progress sm progress-striped active" style="width:30%; margin-left: auto; margin-right:auto;">
-                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
-                                    <span class="sr-only">Validando</span>
-                                </div>
-                            </div>
+                </div>
+            </div>
+
+            <div class="container-fluid" id="validatingcontainer" style="display:none">
+                <div class="row text-center">
+                    <div class="progress sm progress-striped active" style="width:30%; margin-left: auto; margin-right:auto;">
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+                            <span class="sr-only">Validando</span>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="container-fluid" id="hourscontainer" style="display:none">
-                        <div class="row">
-                            <div class="col-xs-10">
-                                <div class="box box-primary box-solid" id="horasFechaSelector">
-                                    <div class="box-header">
-                                        <h3 class="box-title">Escoge fecha</h3>
-                                    </div>
-                                    <div class="box-body text-center" >
-                                        <div class="row">
-                                            <div class="col-xs-3">
-                                                <a href="#" class="fa fa-angle-double-left selectorLeft" id="horasLeftSelector">&nbsp;</a>
-                                            </div>
-                                            <div class="col-xs-6">
-                                                <input type="text" id="horasFechaSelectorDp" class="form-control" data-date-format="DD/MM/YYYY">
-                                            </div>
-                                            <div class="col-xs-3">
-                                                <a href="#" class="fa fa-angle-double-right selectorRight" id="horasRightSelector">&nbsp;</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
+            <div class="container-fluid" id="hourscontainer" style="display:none">
+                <div class="row">
+                    <div class="col-xs-10 col-md-10">
+                        <div class="box box-primary box-solid" id="horasFechaSelector">
+                            <div class="box-header">
+                                <h3 class="box-title">Escoge fecha</h3>
                             </div>
-                            <div class="col-xs-2" style="text-align:center" >
-                                <!-- chapuza: si pones un value mayor que 8, muestra 0. Pero si haces $('.knob').val(9), pinta el input, pero no el arco
-                                lo que nos permite hacerlo sin que lo machaque el knob -->
-                                <input id="horasKnob" type="text" readonly class="knob" value="10" data-min="0" data-max="8" data-width="90" data-height="90" data-fgColor="#00a65a"/>
-                            </div>
-                        </div>
-
-                        <div class="row" id="horasListBody">
-
-
-                        </div>
-                    </div>
-
-
-                </section>
-                <!-- /.content -->
-            </aside>
-        </div>
-
-
-
-        <div class="tab-pane" id="settings">
-            <aside class="right-side">
-                <!-- Content Header (Page header) -->
-                <section class="content-header">
-                    <h1>
-                        Settings
-                        <small>... selecciona los proyectos en los que participas</small>
-                    </h1>
-                </section>
-
-                <!-- Main content -->
-                <section class="content">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="box box-primary box-solid">
-                                    <div class="box-header" data-toggle="tooltip" title="Escoge la pestaña en la que se va a guardar los datos">
-                                        <h3 class="box-title">Dime quién eres tú</h3>
+                            <div class="box-body text-center" >
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <a href="#" class="fa fa-angle-double-left selectorLeft" id="horasLeftSelector">&nbsp;</a>
                                     </div>
-                                    <div class="box-body">
-                                        <select class="form-control" id="settingsUsersList">
-
-                                        </select>
+                                    <div class="col-xs-6">
+                                        <input type="text" id="horasFechaSelectorDp" class="form-control" data-date-format="DD/MM/YYYY">
                                     </div>
-                                </div>
-                                <div class="box box-primary box-solid">
-                                    <div class="box-header" data-toggle="tooltip" title="Escoge los proyectos que quieres que se muestren por defecto cuando estés metiendo las horas. El número entre paréntesis es el número del proyecto en el CMO">
-                                        <h3 class="box-title">Escoge los proyectos</h3>
-                                    </div>
-                                    <div class="box-body">
-                                        <div class="container-fluid">
-                                            <div class="row" id="settingsProjectsList">
-                                                <!-- this will be deleted when projects are loaded -->
-                                                <div class="progress sm progress-striped active" style="width:30%; margin-left: auto; margin-right:auto;">
-                                                    titi2
-                                                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
-                                                        <span class="sr-only">Validando</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div class="col-xs-3">
+                                        <a href="#" class="fa fa-angle-double-right selectorRight" id="horasRightSelector">&nbsp;</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                </section>
-            </aside>
-        </div>
+                    </div>
+                    <div class="col-xs-2 col-md-2" style="text-align:center" >
+                        <!-- chapuza: si pones un value mayor que 8, muestra 0. Pero si haces $('.knob').val(9), pinta el input, pero no el arco
+                        lo que nos permite hacerlo sin que lo machaque el knob -->
+                        <div class="hidden-xs">
+                            <input id="horasKnob" type="text" readonly class="knob" value="10" data-min="0" data-max="8" data-width="90" data-height="90" data-fgColor="#00a65a"/>
+                        </div>
+                        <div class="visible-xs">
+                            <div class="progress vertical" style="height:96px">
+                                <div id="horasKnobProgressbar" class="progress-bar progress-bar-green" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="height: 0%">
+                                    <span class="sr-only">40%</span>
+                                    <span id="horasNoKnob"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="horasListBody">
+
+
+                </div>
+            </div>
+
+
+        </section>
         <!-- /.content -->
+    </aside>
+</div>
 
-    </div>
-    <!-- /.right-side -->
+
+
+<div class="tab-pane" id="settings">
+    <aside class="right-side">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Settings
+                <small>... selecciona los proyectos en los que participas</small>
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="box box-primary box-solid">
+                            <div class="box-header" data-toggle="tooltip" title="Escoge la pestaña en la que se va a guardar los datos">
+                                <h3 class="box-title">Dime quién eres tú</h3>
+                            </div>
+                            <div class="box-body">
+                                <select class="form-control" id="settingsUsersList">
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="box box-primary box-solid">
+                            <div class="box-header" data-toggle="tooltip" title="Escoge los proyectos que quieres que se muestren por defecto cuando estés metiendo las horas. El número entre paréntesis es el número del proyecto en el CMO">
+                                <h3 class="box-title">Escoge los proyectos</h3>
+                            </div>
+                            <div class="box-body">
+                                <div class="container-fluid">
+                                    <div class="row" id="settingsProjectsList">
+                                        <!-- this will be deleted when projects are loaded -->
+                                        <div class="progress sm progress-striped active" style="width:30%; margin-left: auto; margin-right:auto;">
+                                            titi2
+                                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+                                                <span class="sr-only">Validando</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </aside>
+</div>
+
+<div class="tab-pane" id="resumen">
+    <aside class="right-side">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Resumen
+                <small>... lleva las horas al día &nbsp;<span class="fa fa-smile-o"></span></small>
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="box box-solid">
+                            <div class="box-header">
+                                <h3 class="box-title"><span class="fa fa-calendar-o"></span> <span id="ResumenMonthName">Febrero 2014</span></h3>
+                                <div class="box-tools pull-right">
+                                    <button class="btn btn-info" id="ResumenMonthSubstract"> < </button>
+                                    <button class="btn btn-info" id="ResumenMonthAdd"> > </button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <table class="table table-bordered" id="ResumenCalendar">
+                                    <tr>
+                                        <th>L</th>
+                                        <th>M</th>
+                                        <th>X</th>
+                                        <th>J</th>
+                                        <th>V</th>
+                                        <th>S</th>
+                                        <th>D</th>
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                    </tr>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </aside>
+</div>
+<!-- /.content -->
+
+</div>
+<!-- /.right-side -->
 </div>
 <!-- ./wrapper -->
 
 <div id="hoursClientProjectTemplate" style="display:none">
-    <div class="col-sm-6">
+    <div class="col-sm-6 col-xs-12">
         <div class="box box-warning">
             <div class="box-header">
                 <i class="fa fa-star"></i>
@@ -235,23 +350,34 @@
 
             <div class="box-body hoursClientProjectTaskBody">
                 <div class="row rowTask" id="hoursClientProjectTaskTemplate">
-                    <div class="col-xs-4 celdaproyecto" style="padding-left:15px !important">
-                        <input type="text" name="task" class="form-control" placeholder="Tarea">
+                    <div class="col-xs-4 col-sm-4 col-lg-4 celdaproyecto celdaTareasSelect" style="padding-left:15px !important">
+                        <div class="input-group">
+                            <input type="text" name="task" class="form-control" placeholder="Tarea"/>
+                          <span class="input-group-btn">
+                            <button class="btn btn-default tareasbtn" type="button"><span class="fa fa-caret-down"></span></button>
+                          </span>
+                        </div>
                     </div>
-                    <div class="col-xs-6 celdaproyecto">
+                    <div class="col-xs-3 col-sm-3 col-lg-4 celdaproyecto">
                         <input type="text" name="description" class="form-control"  placeholder="Descripción">
                     </div>
-                    <div class="col-xs-1 celdaproyecto" >
-                        <input type="text" name="hours" class="form-control"  placeholder="hrs.">
+                    <div class="col-xs-3 col-sm-3 col-lg-2 celdaproyecto celdaHorasSelect" >
+                        <div class="input-group">
+                            <input type="number" name="hours" class="form-control"  placeholder="hrs.">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default horasbtn" type="button" name="horasbtn"><span class="fa fa-caret-down"></span></button>
+                            </span>
+                        </div>
                     </div>
-                    <div class="col-xs-1 celdaproyecto" title="facturable S/N" data-toggle="tooltip">
+                    <div class="col-xs-2 col-sm-1 celdaproyecto" title="facturable S/N" data-toggle="tooltip">
+
                         <input type="checkbox" name="facturablesn" class="checkable" checked style="display:none">
-                            <i class="fortrue fa fa-check" style="display:block"></i>
-                            <i class="forfalse fa fa-times" style="display:none"></i>
+                        <i class="fortrue fa fa-check" style="display:block"></i>
+                        <i class="forfalse fa fa-times" style="display:none"></i>
                     </div>
                 </div>
                 <div class="row hoursMorebutton">
-                    <div class="col-xs-1 col-xs-offset-10 pull-right" style="margin-right:15px">
+                    <div class="col-xs-2 col-xs-offset-10 pull-right" style="margin-right:15px">
                         <button class="btn btn-primary btn-sm">+</button>
                     </div>
                 </div>
@@ -260,36 +386,75 @@
     </div>
 </div>
 
-<div class="overlay bg-black" id="hoursSaveLoading" style="display:none">
+<div class="overlay bg-black" id="hoursSaveLoading" style="z-index:3; display:none">
     <div class="text-center" style="position:absolute; top:0; left:0; bottom:0; right:0;  width:200px; height:200px; margin: auto;  ">
         <input id="hoursDoneKnob" type="text" readonly class="knob" value="35" data-min="0" data-max="100" data-width="160" data-height="160" data-fgColor="#00a65a" data-bgColor="#ffffff"/>
     </div>
 </div>
-<!-- MODAL POPUP IS NOT NEEDED IN A WEBAPP, but should be needed if inside phonegap
-<form role="form" id="gplusform">
-<div class="modal fade" id="loginmodal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Atención....</h4>
-            </div>
-            <div class="modal-body">
 
-                    <div class="form-group">
-                        <label for="codeid">Introduce el código devuelto por G+</label>
-                        <input type="text" class="form-control" id="codeid" placeholder="Introduce código" required>
-                    </div>
+<div class="overlay bg-light-blue" id="initialLoading" style="z-index:3;">
+    <div class="text-center" style="position:absolute; top:0; left:0; bottom:0; right:0; width:200px; height:68px; margin: auto;  ">
+        <img src="img/logo_init.png" class="img-responsive">
+        <span class="text-danger">with <3</span>
+    </div>
+</div>
 
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                <input type="submit" class="btn btn-primary" value="Guardar">
-            </div>
+<div class="overlay bg-gray" id="tasksSelectLoading" style="z-index:3; display:none">
+    <div class="text-center" style="position:absolute; top:0; left:0; bottom:0; right:0; width:200px; height:68px; margin: auto;  ">
+        <div class="progress sm progress-striped active" style="width:50%; margin-left: auto; margin-right:auto;">
+            <div id="tasksSelectLoadingpb" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+                <span class="sr-only">Loading</span></div>
         </div>
     </div>
 </div>
-</form>
+
+
+<select class="form-control" name="hoursSelectorSelect" id="hoursSelectorSelect" style="display:none;">
+    <option></option>
+    <option>0.5</option>
+    <option>1</option>
+    <option>1.5</option>
+    <option>2</option>
+    <option>2.5</option>
+    <option>3</option>
+    <option>3.5</option>
+    <option>4</option>
+    <option>4.5</option>
+    <option>5</option>
+    <option>5.5</option>
+    <option>6</option>
+    <option>6.5</option>
+    <option>7</option>
+    <option>7.5</option>
+    <option>8</option>
+    <option>8.5</option>
+    <option>9</option>
+    <option>9.5</option>
+    <option>10</option>
+
+</select>
+
+<select class="form-control" name="tareasSelectorSelect" id="tareasSelectorSelect" style="display:none;">
+    <option></option>
+    <option>Tarea1</option>
+    <option>Tarea2</option>
+</select>
+
+<!--<div class="overlay bg-black" id="hoursSelector" style="z-index:3; display:none">
+    <div class="panel panel-primary" style="margin-top:50px">
+        <div class="panel-heading">Num. horas</div>
+        <div class="list-group">
+            <a href="#" class="list-group-item">1</a>
+            <a href="#" class="list-group-item">2</a>
+            <a href="#" class="list-group-item">3</a>
+            <a href="#" class="list-group-item">4</a>
+            <a href="#" class="list-group-item">5</a>
+            <a href="#" class="list-group-item">6</a>
+            <a href="#" class="list-group-item">7</a>
+            <a href="#" class="list-group-item">8</a>
+        </div>
+    </div>
+</div>
 -->
 <!-- jQuery 2.0.2 -->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
@@ -306,6 +471,7 @@
 <!-- CONTROLLERS --->
 <script src="js/controllers/LoginCtl.js" type="text/javascript"></script>
 <script src="js/controllers/HorasCtl.js" type="text/javascript"></script>
+<script src="js/controllers/ResumenCtl.js" type="text/javascript"></script>
 <script src="js/controllers/SettingsCtl.js" type="text/javascript"></script>
 
 <!-- SERVICES --->
@@ -315,5 +481,7 @@
 
 <script src="https://apis.google.com/js/plus.js"></script>
 <script src="https://apis.google.com/js/client:plus.js"></script>
+
+<script src="cordova.js"></script>
 </body>
 </html>

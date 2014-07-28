@@ -105,7 +105,7 @@ GoogleSpreadsheetService.prototype.getHours = function (filter, idUser, callback
             //console.log(data.feed.link);
             data.feed.link.forEach(function(l) {
                 if (l.rel=="http://schemas.google.com/g/2005#post") {
-                    that.postLink= l;
+                    that.postLink= l; //the link where i should post the feed to save
                 }
             });
             if (data.feed.entry==undefined) { callback([]); return; }
@@ -119,10 +119,11 @@ GoogleSpreadsheetService.prototype.getHours = function (filter, idUser, callback
 }
 
 
+
 GoogleSpreadsheetService.prototype.addTask = function(worksheetId, task, callback, callbackError) {
     //setTimeout(function() { callback(); }, 1000);
     $.ajax({
-        url:'proxy/add-row.php',
+        url:GlobalConfiguration.getAddRowUrl(),
         type:'POST',
         data: { 'access_token' : GlobalConfiguration.getAccessToken().access_token,
                 'tasks': JSON.stringify(task),
@@ -142,7 +143,7 @@ GoogleSpreadsheetService.prototype.addTask = function(worksheetId, task, callbac
 
 GoogleSpreadsheetService.prototype.updateTask = function(worksheetId,task, callback, callbackError) {
     $.ajax({
-        url:'proxy/edit-row.php',
+        url:GlobalConfiguration.getEditRowUrl(),
         type:'POST',
         data: { 'access_token' : GlobalConfiguration.getAccessToken().access_token,
             'task': JSON.stringify(task),
@@ -171,7 +172,7 @@ GoogleSpreadsheetService.prototype.updateTask = function(worksheetId,task, callb
  */
 GoogleSpreadsheetService.prototype.deleteTask = function(worksheetId,task, callback, callbackError) {
     $.ajax({
-        url:'proxy/delete-row.php',
+        url:GlobalConfiguration.getDeleteRowUrl(),
         type:'POST',
         data: { 'access_token' : GlobalConfiguration.getAccessToken().access_token,
             'task': JSON.stringify(task),

@@ -5,17 +5,61 @@ var GlobalConfiguration = {
     CMOFile_TAB_PROYECTOS : "PROYECTOS",
     //CLIENT_ID : '674484425334-2ataiidaqs3mvj2aiarqjbhqe2k1evkq.apps.googleusercontent.com',
     //CLIENT_SECRET: 'gLotxL2xJU-JqkV1m2SAOjzf',
-    CLIENT_ID : '674484425334-uldqmbmjr5p1me20vl6ctlhgqmp555j9.apps.googleusercontent.com',
+    //BROWSER
     CLIENT_SECRET: '7q_a-OPifwQxb4OMPBpT14Ue',
+    CLIENT_ID : '674484425334-uldqmbmjr5p1me20vl6ctlhgqmp555j9.apps.googleusercontent.com',
+    //APP
+    APP_CLIENT_ID: '674484425334-2ataiidaqs3mvj2aiarqjbhqe2k1evkq.apps.googleusercontent.com',
+    APP_CLIENT_SECRET: 'gLotxL2xJU-JqkV1m2SAOjzf',
 
     //CONSTANTS
     LOCALSTORAGE_GPLUSCODE_ACCESSTOKEN : "com.theinit.cmo.titi.localstorage.accesstoken",
     LOCALSTORAGE_PROJECTS : "com.theinit.cmo.titi.localstorage.projects",
     LOCALSTORAGE_USER: "com.theinit.cmo.titi.localstorage.user",
 
-    //GOOGLE APIS (with cors!)
+    //GOOGLE APIS (with a cors proxy!)
     URL_OAUTH_TOKEN : 'proxy/oauth2-token.php',
-    TIME_OAUTH_REVERIFY : 100000 //time in msecs which we check recurrently
+    TIME_OAUTH_REVERIFY : 100000,  //time in msecs which we check recurrently
+
+    getUrlAuthToken : function() {
+        //if we are in an app, we go to the dev.theinit.com server
+        if (GlobalConfiguration.isPhoneGap()) {
+            return "http://dev.theinit.com:8000/titi/"+GlobalConfiguration.URL_OAUTH_TOKEN;
+            //dev.theinit.com:8000 //192.168.0.194:8080
+        } else {
+            return GlobalConfiguration.URL_OAUTH_TOKEN
+        }
+    },
+
+
+    getEditRowUrl : function() {
+        if (GlobalConfiguration.isPhoneGap()) {
+            return "http://dev.theinit.com:8000/titi/proxy/edit-row.php";
+            //dev.theinit.com:8000 //192.168.0.194:8080
+        } else {
+            return 'proxy/edit-row.php';
+        }
+
+    },
+    getAddRowUrl : function() {
+        if (GlobalConfiguration.isPhoneGap()) {
+            return "http://dev.theinit.com:8000/titi/proxy/add-row.php";
+            //dev.theinit.com:8000 //192.168.0.194:8080
+        } else {
+            return 'proxy/add-row.php';
+        }
+    },
+    getDeleteRowUrl : function() {
+        if (GlobalConfiguration.isPhoneGap()) {
+            return "http://dev.theinit.com:8000/titi/proxy/delete-row.php";
+            //dev.theinit.com:8000 //192.168.0.194:8080
+        } else {
+            return 'proxy/delete-row.php';
+        }
+    },
+
+    DUMMY : 1
+
 }
 
 
@@ -145,9 +189,65 @@ GlobalConfiguration.parseFloat = function(number) {
 GlobalConfiguration.setProjects = function(projects) {
     localStorage[GlobalConfiguration.LOCALSTORAGE_PROJECTS]=JSON.stringify(projects);
 }
+
+/**
+ * Gets CLIENT_ID from configuration.
+ * Depending on the isPhonegap function, returns CLIENT_ID or APP_CLIENT_ID.
+ *
+ */
+GlobalConfiguration.getClientID = function() {
+    //console.log("is phonegap? "+GlobalConfiguration.isPhoneGap());
+    //alert(GlobalConfiguration.isPhoneGap());
+    //if (GlobalConfiguration.isPhoneGap()) {
+    //    return GlobalConfiguration.APP_CLIENT_ID;
+    //} else {
+    return GlobalConfiguration.CLIENT_ID;
+    //}
+}
+
+/**
+ * Gets CLIENT_SECRET from configuration.
+ * Depending on the isPhonegap function, returns CLIENT_ID or APP_CLIENT_ID.
+ *
+ */
+GlobalConfiguration.getClientSecret = function() {
+    //console.log("is phonegap? "+GlobalConfiguration.isPhoneGap());
+    //if (GlobalConfiguration.isPhoneGap()) {
+//        return GlobalConfiguration.APP_CLIENT_SECRET;
+//    } else {
+    return GlobalConfiguration.CLIENT_SECRET;
+//    }
+}
+
+
+
+/** IS CORDOVA ******/
+/**
+ * Funcion que te dice si esta ejecutando como app dentro de phonegap. Debería cumplir lo siguiente:
+ * - Si la app se ejecuta desde desktop dentro de un navegador => devuelve false
+ * - Si la app se ejecuta desde movil dentro del navegador => devuelve false
+ * - Si la app se ejecuta desde movil como APP => devuelve true
+ * @returns boolean
+ */
+GlobalConfiguration.isPhoneGap = function() {
+    //alert(typeof cordova);
+    if ( (typeof cordova !== "undefined") || (typeof PhoneGap !== "undefined") || (typeof phonegap !== "undefined")
+        && /^file:\/{3}[^\/]/i.test(window.location.href)
+        && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent)) {
+        return true;
+    }
+    return false;
+}
+
 /** EXTENDING JQUERY **/
 $.urlParam = function(name){
     if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
+        return decodeURIComponent(name[1]);
+}
+
+/** EXTENDING JQUERY **/
+$.valueFromStringParam = function(name,pajar){
+    if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(pajar))
         return decodeURIComponent(name[1]);
 }
 
@@ -164,9 +264,9 @@ $.dateFormat = function(d) {
 
 }
 
-/********* STARTING POINT ***************/
-var currentController;
-$(document).ready(function() {
+
+
+GlobalConfiguration.onDeviceReady = function() {
 
     $('#logout').click(function() {
         if (confirm('Confirma que deseas borrar todos los datos asociados a este ordenador')) {
@@ -184,6 +284,10 @@ $(document).ready(function() {
         TitiController.goto("HorasCtl");
     });
 
+    $('#resumenlink').click(function() {
+        TitiController.goto("ResumenCtl");
+    });
+
     $('#cmoLink').attr("href",'https://docs.google.com/spreadsheet/ccc?key='+GlobalConfiguration.CMOFile);
 
 
@@ -198,15 +302,30 @@ $(document).ready(function() {
             });
         }
     }
+    setTimeout(function() {
+        $('#initialLoading').hide();
+    },1000);
+
     /* END JQUERY KNOB */
-});
+}
+
+/********* STARTING POINT ***************/
+var currentController;
+
+if (GlobalConfiguration.isPhoneGap()) {
+    document.addEventListener("deviceready", GlobalConfiguration.onDeviceReady, false);
+} else {
+    $(window).load(function() {
+        GlobalConfiguration.onDeviceReady();
+    });
+}
 
 function TitiController() {
 
 }
 
 TitiController.goto = function(ctl) {
-    var ctls=["HorasCtl","LoginCtl","SettingsCtl"];
+    var ctls=["HorasCtl","LoginCtl","SettingsCtl", "ResumenCtl"];
 
     if (!(ctls.indexOf(ctl)>-1)) {
         alert('Controller '+ctl+ ' not in valid controllers!');

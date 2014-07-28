@@ -131,6 +131,8 @@ TitiService.prototype.saveDay = function (tasks, callbackProgress, callbackReady
 
 
     if (tasks.length>0) {
+        console.log('saving task... left ones are: ');
+        console.log(JSON.stringify(tasks));
         that.saveTask(tasks[0], done, errorfn);
     } else {
         done();
@@ -153,6 +155,77 @@ TitiService.prototype.saveTask = function(task, done, errorfn) {
     }
 
 }
+
+
+/**
+ * Gets a lists of the distinct tasks for one project
+ * @param client a string with the client name
+ * @param project a string with the project name
+ * @param idUser iduser
+ * @param callback function to be called with tasks array
+ */
+TitiService.prototype.getTasksForProject = function (client, project, idUser, callback, callbackError) {
+
+    filter="cliente=\""+client+"\" and proyecto=\""+project+"\"";
+
+    this.googleSpreadsheetService.getHours(filter, idUser, function(hours) {
+        var allTasks=[];
+        hours.forEach(function(it) {
+            //console.log(it);
+            //distinct tasks: just put the ones that are not already in
+            var tmptarea=it.gsx$tarea.$t.trim();
+            if (tmptarea!="") {
+                if (allTasks.indexOf(tmptarea)<0) {
+                    allTasks.push(tmptarea);
+                }
+            }
+        });
+        callback(allTasks);
+    }, function(error) {
+        alert('Error recovering tasks... ');
+        alert(JSON.stringify(error));
+        callbackError(error);
+    });
+
+}
+
+
+/**
+ * Gets a Map of 1..31 for number of hours for each day
+ * @param year a year like 2014
+ * @param month a month from 1 to 12
+ * @param idUser iduser
+ * @param callback function to be called with tasks array
+ */
+TitiService.prototype.getHoursMapForMonth = function (year, month, idUser, callback, callbackError) {
+
+    var numDays=/9|4|6|11/.test(month)?30:month=2?(!(year%4)&&year%100)||!(year%400)?29:28:31;
+    var startDate="01/"+((month<10)?("0"+month):month)+"/"+year;
+    var endDate=((numDays<10)?("0"+numDays):numDays)+"/"+((month<10)?("0"+month):month)+"/"+year;
+
+    filter="fecha>=\""+startDate+"\" and fecha<=\""+endDate+"\"";
+
+    this.googleSpreadsheetService.getHours(filter, idUser, function(hours) {
+        var resmap=[];
+        hours.forEach(function(it) {
+            //console.log(it);
+            //distinct tasks: just put the ones that are not already in
+            var tmptarea=it.gsx$tarea.$t.trim();
+            if (tmptarea!="") {
+                if (allTasks.indexOf(tmptarea)<0) {
+                    allTasks.push(tmptarea);
+                }
+            }
+        });
+        callback(allTasks);
+    }, function(error) {
+        alert('Error recovering tasks... ');
+        alert(JSON.stringify(error));
+        callbackError(error);
+    });
+
+}
+
 
 
 

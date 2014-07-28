@@ -25,7 +25,7 @@ HorasCtl.prototype.execute = function() {
 
     $('#horasFechaSelectorDp').datetimepicker({
         pickTime: false,
-         defaultDate: new Date(),
+        defaultDate: new Date(),
         //defaultDate: '05/29/2014',
         dateFormat: 'DD/MM/YYYY'
     });
@@ -123,7 +123,7 @@ HorasCtl.prototype.loadDay = function(date) {
 
 /**
  * Adds a box of client-project into the hoursList
- * @param clientProject the client project object
+ * @param clientProject the client project object, with 'client' and 'project' element inside
  * @param projectData list of tasks
  * @param totalHours total hours
  */
@@ -139,6 +139,7 @@ HorasCtl.prototype.addBox = function(clientProject, projectData, totalHours) {
     $htmlBox.data("clientproject", clientProject);
     var numtask=0;
 
+    //Relleno la informacion conocida
     projectData.forEach(function(task) {
         var $hcptt=$('#hoursClientProjectTaskTemplate',$htmlBox).clone(); //es un rowTask
         $('input[name=task]',$hcptt).val(task.task);
@@ -147,19 +148,29 @@ HorasCtl.prototype.addBox = function(clientProject, projectData, totalHours) {
         $('input[name=facturablesn]',$hcptt).prop('checked',(task.facturable=='S'));
         $hcptt.attr('id','TASK#'+task.id); //task has client and project in it, so it is unique
         $hcptt.data("originalTask",task); //cada rowTask le metemos el originalTask
+
+        currentController.assignClickButtonToHours($hcptt);
+        currentController.assignClickButtonToTasks(clientProject,$hcptt);
+
         $('.hoursClientProjectTaskBody',$htmlBox).prepend($hcptt);
         numtask++;
     });
 
+    //Relleno hasta 4 tareas en total
     for (numtask;numtask<4; numtask++) {
         var $hcptt=$('#hoursClientProjectTaskTemplate',$htmlBox).clone();
         $hcptt.removeAttr('id');
         $hcptt.data("originalTask",null);
+
+        currentController.assignClickButtonToHours($hcptt);
+        currentController.assignClickButtonToTasks(clientProject,$hcptt);
+
         $hcptt.insertBefore($('.hoursClientProjectTaskBody .hoursMorebutton',$htmlBox));
     }
     $('#hoursClientProjectTaskTemplate',$htmlBox).remove();
 
 
+    //aniado la funcionalidad del [+] para anadir una fila al final
     $('.hoursMorebutton .btn',$htmlBox).click(function() {
         var $row=$('#hoursClientProjectTaskTemplate').clone();
         var $hoursbody=$(this).closest('.hoursClientProjectTaskBody');
@@ -168,6 +179,13 @@ HorasCtl.prototype.addBox = function(clientProject, projectData, totalHours) {
             currentController.makeCoolCheckbox($(this));
 
         });
+
+        $('input[name=task]',$row).val('');
+        $('input[name=hours]',$row).val('');
+        $('input[name=description]',$row).val('');
+        currentController.assignClickButtonToHours($row);
+        currentController.assignClickButtonToTasks(clientProject,$row);
+
         return false;
     });
 
@@ -223,6 +241,136 @@ HorasCtl.prototype.makeCoolCheckbox = function($checkbox) {
     }
 
 }
+
+/**
+ * ASsigns to the click button a function that will load elements of the tasks
+ * @param clientProject an object with 'client' and 'project' elements
+ * @param $hcptt the row that has to be added the element to
+ */
+HorasCtl.prototype.assignClickButtonToTasks= function(clientProject,$hcptt) {
+
+    $('.tareasbtn',$hcptt).on("click", { clientProject: clientProject, hcptt: $hcptt } , function(e) {
+
+        var $hcpelement=e.data.hcptt;
+        var cprj=e.data.clientProject;
+        currentController.loadTasksForProject(cprj, function(tasks) {
+
+            console.log(JSON.stringify(tasks));
+            var $celda=$('.celdaTareasSelect',$hcpelement);
+            var celdalementContent=$celda.html();
+            var $hss=$('#tareasSelectorSelect').clone();
+            var tmpid='tssTmp'+Math.random();
+            $hss.attr('id',tmpid);
+
+            $hss.empty().append($("<option>").val("").html("")); //we empty it and add a empty value
+            tasks.forEach(function(it) {
+                $hss.append( $("<option>").val(it).html(it));
+            });
+
+            $hss.show();
+
+            $celda.empty().append($hss);
+
+            $hss.focus();
+            $hss.on("blur", {clientProject: clientProject, hcptt: $hcpelement}, function(evn) {
+                var $hcpelementnuevo=evn.data.hcptt;
+                var clientproject=evn.data.clientProject;
+                var $celdalementContent=$(celdalementContent);
+                $('input[name=task]',$celdalementContent).val($(this).val()); //paste the val from the select to the tasks input value
+                $celda.append($celdalementContent);
+                $(this).remove();
+                currentController.assignClickButtonToTasks(clientproject,$hcpelementnuevo); //le asignamos que puede haber click luego otra vez
+            }).on("change", { hcptt: $hcpelement }, function(evn) {
+                $(this).trigger('blur');
+            });
+
+            currentController.showSelectDropdown(tmpid);
+
+        });
+
+
+    });
+}
+
+/**
+ * When clicking a task, we have to load the tasks of the selected project.
+ * To do that, this function calls GoogleSpreadsheetService and when tasks are recovered, then
+ * we call the callback function back with those tasks
+ * @param project an object with "client" and "project" elements
+ * @param callback
+ */
+HorasCtl.prototype.loadTasksForProject=function(clientProject, callback) {
+    currentController.tasksSelectLoadingPbStart();
+    currentController.titiService.getTasksForProject(clientProject.client, clientProject.project, GlobalConfiguration.getUser().id, function(tasks) {
+        currentController.tasksSelectLoadingPbStop();
+        callback(tasks);
+    }, function(error) {
+        //error
+        currentController.tasksSelectLoadingPbStop();
+    });
+}
+
+
+HorasCtl.prototype.tasksSelectLoadingPbStart = function() {
+    $('#tasksSelectLoading').show();
+}
+
+HorasCtl.prototype.tasksSelectLoadingPbStop = function() {
+    $('#tasksSelectLoading').hide();
+}
+
+HorasCtl.prototype.assignClickButtonToHours= function($hcptt) {
+    $('.horasbtn',$hcptt).on("click", { hcptt: $hcptt } , function(e) {
+        //Pongo el desplegable, oculto el grupo
+        var $hcpelement=e.data.hcptt;
+        var $celda=$('.celdaHorasSelect',$hcpelement);
+        var celdalementContent=$celda.html();
+        var $hss=$('#hoursSelectorSelect').clone();
+        var tmpid='hssTmp'+Math.random();
+        $hss.attr('id',tmpid);
+        $hss.show();
+
+        $celda.empty().append($hss);
+
+        $hss.focus();
+        $hss.on("blur", {hcptt: $hcpelement}, function(e) {
+            var $hcpelement=e.data.hcptt;
+            var $celdalementContent=$(celdalementContent);
+            $('input[name=hours]',$celdalementContent).val($(this).val()); //paste the val from the select to the hours value
+            $celda.append($celdalementContent);
+            $(this).remove();
+            currentController.assignClickButtonToHours($hcpelement); //le asignamos que puede haber click luego otra vez
+        }).on("change", { hcptt: $hcpelement }, function(e) {
+            $(this).trigger('blur');
+        });
+
+        currentController.showSelectDropdown(tmpid);
+
+
+    });
+
+}
+
+/**
+ * Dropdowns a select box without having to click it (actually, $().click() doesnt dropdown it).
+ * From: http://stackoverflow.com/questions/249192/how-can-you-programmatically-tell-an-html-select-to-drop-down-for-example-due
+ * Only works on chrome !
+ * Needed to make the native dropdown appear in android
+ * In phonegap? no idea how it will work
+ * @param id
+ */
+HorasCtl.prototype.showSelectDropdown = function(id) {
+
+    var showDropdown = function (element) {
+        var event;
+        event = document.createEvent('MouseEvents');
+        event.initMouseEvent('mousedown', true, true, window);
+        element.dispatchEvent(event);
+    };
+
+    var dropdown = document.getElementById(id);
+    showDropdown(dropdown);
+}
 /**
  * Refreshes the knob. Called by loadDay
  *
@@ -231,6 +379,8 @@ HorasCtl.prototype.makeCoolCheckbox = function($checkbox) {
 HorasCtl.prototype.refreshKnob = function(numhoras) {
 
     $('#horasKnob').val(numhoras);
+    $('#horasNoKnob').text(numhoras);
+    $('#horasKnobProgressbar').height(((numhoras>8)?100:((numhoras/8)*100))+"%");
 
     //if more than 8, knob shows 0. So we can overwrite it if we set it back again (chapuzation it's said)
     /*
@@ -280,13 +430,15 @@ HorasCtl.prototype.save = function() {
 
     this.getScreenTasks(function (tasks) {
 
-        console.log(tasks);
+        console.log(JSON.stringify(tasks));
+
         if (tasks.length>0) {
             //console.log(tasks);
             $('#hoursSaveLoading').show();
             $('#hoursDoneKnob').val(0);
             $('#hoursDoneKnob').trigger('change');
 
+            console.log('going to save');
             currentController.titiService.saveDay(tasks, function(num, total) {
                 //paint progress
                 $('#hoursDoneKnob').val(Math.round(num*100/total));
