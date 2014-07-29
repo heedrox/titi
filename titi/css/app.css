@@ -31,4 +31,4 @@ tr.resumenHeader, td.outofmonth { background-color:#f3f4f5; }
 
 #ResumenCalendar th, #ResumenCalendar td { text-align: center !important; }
 #ResumenCalendar td { cursor:pointer; }
-#ResumenCalendar td:hover { background-color:#f3f4f5; }
+#ResumenCalendar td:hover, #ResumenCalendar td.hover { background-color:#f3f4f5; }

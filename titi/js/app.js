@@ -293,6 +293,7 @@ $.dateFormat = function(d) {
 
 GlobalConfiguration.onDeviceReady = function() {
 
+    $('#logout').off("click");
     $('#logout').click(function() {
         if (confirm('Confirma que deseas borrar todos los datos asociados a este ordenador')) {
             GlobalConfiguration.logout();
@@ -300,6 +301,7 @@ GlobalConfiguration.onDeviceReady = function() {
         }
         return false;
     });
+
 
     $('#settingslink').click(function() {
         TitiController.goto("SettingsCtl");

@@ -110,6 +110,15 @@ ResumenCtl.prototype.paintCalendar = function() {
                     TitiController.goto("HorasCtl", { date : selectedDate });
                 });
             }
+
+            //Add hover support for touch devices
+            $(this).off("touchstart").off("touchend");
+
+            $(this).on('touchstart', function() {
+                $(this).addClass('hover');
+            }).on('touchend', function() {
+                $(this).removeClass('hover');
+            });
         });
 
     }, function(error) {
