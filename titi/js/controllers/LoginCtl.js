@@ -70,6 +70,7 @@ LoginCtl.prototype.verifyLoggedProcess = function() {
         $('#validatingcontainer').hide();
         $('#hourscontainer').show();
         TitiController.goto("HorasCtl");
+        console.log(data);
         if (shouldUpdate) {
             GlobalConfiguration.setAccessToken(data);
         }

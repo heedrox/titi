@@ -14,6 +14,7 @@ var GlobalConfiguration = {
 
     //CONSTANTS
     LOCALSTORAGE_GPLUSCODE_ACCESSTOKEN : "com.theinit.cmo.titi.localstorage.accesstoken",
+    LOCALSTORAGE_GPLUSCODE_REFRESHTOKEN : "com.theinit.cmo.titi.localstorage.refreshtoken",
     LOCALSTORAGE_PROJECTS : "com.theinit.cmo.titi.localstorage.projects",
     LOCALSTORAGE_USER: "com.theinit.cmo.titi.localstorage.user",
 
@@ -81,6 +82,26 @@ GlobalConfiguration.getAccessToken = function() {
 
 GlobalConfiguration.setAccessToken = function(gplusdata) {
     localStorage[GlobalConfiguration.LOCALSTORAGE_GPLUSCODE_ACCESSTOKEN]=JSON.stringify(gplusdata);
+    if (gplusdata.refresh_token!=undefined) { //if a refresh token comes, then we set it outside
+        GlobalConfiguration.setRefreshToken(gplusdata.refresh_token);
+    }
+}
+
+GlobalConfiguration.getRefreshToken = function() {
+    if (localStorage[GlobalConfiguration.LOCALSTORAGE_GPLUSCODE_REFRESHTOKEN]!=undefined) {
+        return JSON.parse(localStorage[GlobalConfiguration.LOCALSTORAGE_GPLUSCODE_REFRESHTOKEN]);
+    } else {
+        return undefined;
+    }
+}
+
+/**
+ * The refresh token is the token you should use to get a new access token when it expires
+ * (yes, access token DO expire!!!)
+ * @param data
+ */
+GlobalConfiguration.setRefreshToken = function(data) {
+    localStorage[GlobalConfiguration.LOCALSTORAGE_GPLUSCODE_REFRESHTOKEN]=JSON.stringify(data);
 }
 
 GlobalConfiguration.logout = function() {
@@ -90,8 +111,12 @@ GlobalConfiguration.logout = function() {
         });
 }
 
+/**
+ * Clears Access Token AND Refresh Token
+ */
 GlobalConfiguration.clearAccessToken = function() {
     localStorage.removeItem(GlobalConfiguration.LOCALSTORAGE_GPLUSCODE_ACCESSTOKEN);
+    localStorage.removeItem(GlobalConfiguration.LOCALSTORAGE_GPLUSCODE_REFRESHTOKEN);
 }
 
 GlobalConfiguration.showError = function(error) {
@@ -324,7 +349,7 @@ function TitiController() {
 
 }
 
-TitiController.goto = function(ctl) {
+TitiController.goto = function(ctl, args) {
     var ctls=["HorasCtl","LoginCtl","SettingsCtl", "ResumenCtl"];
 
     if (!(ctls.indexOf(ctl)>-1)) {
@@ -332,5 +357,8 @@ TitiController.goto = function(ctl) {
         return false;
     }
     currentController = eval("new "+ctl+"()");
+    if (args!=undefined) {
+        currentController.setArgs(args);
+    }
     currentController.execute();
 }

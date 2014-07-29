@@ -1,6 +1,20 @@
 function HorasCtl() {
     this.titiService = new TitiService();
+
+    this.date=new Date();
 }
+
+/**
+ * A controller accepts a args object with the arguments
+ * @param args
+ */
+HorasCtl.prototype.setArgs = function(args) {
+    //console.log('getting args');
+    console.log(args);
+    if (args.date != undefined) {
+        currentController.date=args.date;
+    }
+};
 
 /**
  * A controller should use execute to bind elemnts and preprare the view.
@@ -25,20 +39,27 @@ HorasCtl.prototype.execute = function() {
 
     $('#horasFechaSelectorDp').datetimepicker({
         pickTime: false,
-        defaultDate: new Date(),
+        //defaultDate: currentController.date.getMonth()+"/"+currentController.date.getDay()+"/"+currentController.date.getFullYear(),
+        defaultDate : currentController.date,
         //defaultDate: '05/29/2014',
         dateFormat: 'DD/MM/YYYY'
     });
 
+
+    $('#horasFechaSelectorDp').data("DateTimePicker").setDate(currentController.date); //when called for second time, defaultDate is not invoked
+    $('#horasFechaSelectorDp').trigger('dp.change');
+
+
+    console.log($('#horasFechaSelectorDp').data("DateTimePicker").getDate().toDate());
     this.loadDay($('#horasFechaSelectorDp').data("DateTimePicker").getDate().toDate());
 
-    $("#horasFechaSelectorDp").unbind("dp.change");
+    $("#horasFechaSelectorDp").off("dp.change");
     $("#horasFechaSelectorDp").on("dp.change",function (e) {
         currentController.reloadDay();
     });
 
-    $('#horasLeftSelector').unbind("click");
-    $('#horasRightSelector').unbind("click");
+    $('#horasLeftSelector').off("click");
+    $('#horasRightSelector').off("click");
     $('#horasLeftSelector').on("click", function(e) {
         currentController.addDay(-1);
     });
@@ -46,18 +67,18 @@ HorasCtl.prototype.execute = function() {
         currentController.addDay(1);
     });
 
-    $('#horasSaveBtn').unbind("click");
+    $('#horasSaveBtn').off("click");
     $('#horasSaveBtn').click(function() {
         currentController.save();
     });
-}
+};
 
 /**
  * Reloads the day based on the value of the date of horasFechaSelectorDp
  */
 HorasCtl.prototype.reloadDay = function() {
     currentController.loadDay($('#horasFechaSelectorDp').data("DateTimePicker").getDate().toDate());
-}
+};
 
 /**
  * Reloads the horas table, talking to the database
@@ -119,7 +140,7 @@ HorasCtl.prototype.loadDay = function(date) {
             //$('#horasLoadingList').hide();
         });
     });
-}
+};
 
 /**
  * Adds a box of client-project into the hoursList
@@ -194,7 +215,7 @@ HorasCtl.prototype.addBox = function(clientProject, projectData, totalHours) {
     $('input[type="checkbox"].checkable', $htmlBox).each(function() {
         currentController.makeCoolCheckbox($(this));
     });
-}
+};
 
 /**
  * Makes the checkboxes of the boxes super cool
@@ -205,7 +226,7 @@ HorasCtl.prototype.makeCoolCheckbox = function($checkbox) {
     $lbltrue=$checkbox.next();
     $lblfalse=$lbltrue.next();
 
-    $lbltrue.unbind("click");
+    $lbltrue.off("click");
     $lbltrue.on("click", function() {
         $checkbox=$(this).prev();
         $(this).next().show();
@@ -215,7 +236,7 @@ HorasCtl.prototype.makeCoolCheckbox = function($checkbox) {
         //$(this).closest('.row').addClass("bg-red");
     });
 
-    $lblfalse.unbind("click");
+    $lblfalse.off("click");
     $lblfalse.on("click", function() {
         $checkbox=$(this).prev().prev();
 
@@ -240,7 +261,7 @@ HorasCtl.prototype.makeCoolCheckbox = function($checkbox) {
 
     }
 
-}
+};
 
 /**
  * ASsigns to the click button a function that will load elements of the tasks
@@ -290,7 +311,7 @@ HorasCtl.prototype.assignClickButtonToTasks= function(clientProject,$hcptt) {
 
 
     });
-}
+};
 
 /**
  * When clicking a task, we have to load the tasks of the selected project.
@@ -308,16 +329,16 @@ HorasCtl.prototype.loadTasksForProject=function(clientProject, callback) {
         //error
         currentController.tasksSelectLoadingPbStop();
     });
-}
+};
 
 
 HorasCtl.prototype.tasksSelectLoadingPbStart = function() {
     $('#tasksSelectLoading').show();
-}
+};
 
 HorasCtl.prototype.tasksSelectLoadingPbStop = function() {
     $('#tasksSelectLoading').hide();
-}
+};
 
 HorasCtl.prototype.assignClickButtonToHours= function($hcptt) {
     $('.horasbtn',$hcptt).on("click", { hcptt: $hcptt } , function(e) {
@@ -349,7 +370,7 @@ HorasCtl.prototype.assignClickButtonToHours= function($hcptt) {
 
     });
 
-}
+};
 
 /**
  * Dropdowns a select box without having to click it (actually, $().click() doesnt dropdown it).
@@ -370,7 +391,8 @@ HorasCtl.prototype.showSelectDropdown = function(id) {
 
     var dropdown = document.getElementById(id);
     showDropdown(dropdown);
-}
+};
+
 /**
  * Refreshes the knob. Called by loadDay
  *
@@ -398,7 +420,7 @@ HorasCtl.prototype.refreshKnob = function(numhoras) {
         $('#horasKnob').val(numhoras);
     }
 
-}
+};
 
 /**
  * Adds a day to the calendar, and triggers the change
@@ -412,7 +434,7 @@ HorasCtl.prototype.addDay = function(nrDays) {
     $('#horasFechaSelectorDp').data("DateTimePicker").setDate(curDay);
     $('#horasFechaSelectorDp').trigger('dp.change');
 
-}
+};
 
 /**
  * Prints the progressbar when changing the days
@@ -421,7 +443,7 @@ HorasCtl.prototype.setHoursLoading = function() {
     $('#horasListBody').html('<div class="row text-center"><div class="progress sm progress-striped active" ' +
         'style="width:30%; margin-left: auto; margin-right:auto;"><div class="progress-bar progress-bar-success" role="progressbar" ' +
         'aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%"><span class="sr-only">Cargando</span></div></div></div>');
-}
+};
 
 /**
  * Saves the information on the screen, calling TitiService
@@ -456,7 +478,7 @@ HorasCtl.prototype.save = function() {
     });
 
 
-}
+};
 
 /**
  * Gets the tasks from the Hours Screen.
@@ -527,6 +549,6 @@ HorasCtl.prototype.getScreenTasks=function(callback) {
     } else {
         callback([]);
     }
-}
+};
 
 

@@ -27,7 +27,9 @@ GooglePlusService.prototype.startOAuthFlow = function() {
             client_id: GlobalConfiguration.getClientID(),
             redirect_uri: this.getRedirectUri(),
             response_type: 'code',
-            scope: 'https://www.googleapis.com/auth/plus.login https://spreadsheets.google.com/feeds'
+            scope: 'https://www.googleapis.com/auth/plus.login https://spreadsheets.google.com/feeds',
+            approval_prompt : 'force',
+            access_type:'offline'
         });
 
         var authWindow = window.open(authUrl, '_blank', 'location=no,toolbar=no');
@@ -64,7 +66,9 @@ GooglePlusService.prototype.startOAuthFlow = function() {
             redirect_uri: this.getRedirectUri(),
             response_type: 'code',
             scope: 'https://www.googleapis.com/auth/plus.login https://spreadsheets.google.com/feeds',
-            immediate: false
+            immediate: false,
+            approval_prompt : 'force',
+            access_type:'offline'
         });
     }
 
@@ -93,6 +97,8 @@ GooglePlusService.prototype.getTokenFromCode = function(code, callbackFn) {
         },
         dataType:'json',
         success : function(data) {
+            console.log("Got access token from code!");
+            console.log(data);
             callbackFn(data);
         },
         error : function(error) {
@@ -104,7 +110,7 @@ GooglePlusService.prototype.getTokenFromCode = function(code, callbackFn) {
     });
 
 };
-
+/*
 GooglePlusService.prototype.getUserFromApi = function(api, callback) {
     var url="https://www.googleapis.com/plus/v1/people/me";
     $.ajax({
@@ -125,7 +131,7 @@ GooglePlusService.prototype.getUserFromApi = function(api, callback) {
         }
     });
 
-}
+}*/
 
 /**
  * This function should be called repeatedly when having a token, so the token is checked.
@@ -181,14 +187,14 @@ GooglePlusService.prototype.refreshToken = function(callbackOk, callbackError) {
         type:'POST',
         data: { 'client_id' : GlobalConfiguration.getClientID(),
             'client_secret' : GlobalConfiguration.getClientSecret(),
-            'refresh_token' : GlobalConfiguration.getAccessToken().refresh_token,
+            'refresh_token' : GlobalConfiguration.getRefreshToken(),
             'grant_type' : 'refresh_token'
         },
         dataType:'json',
         success : function(data) {
             //we set back the refresh_token so we dont loose it
-            data.refresh_token=GlobalConfiguration.getAccessToken().refresh_token;
-            callbackOk(data, 1)
+            data.refresh_token=GlobalConfiguration.getRefreshToken();
+            callbackOk(data, 1);
         },
         error : function(error) {
             console.log(error);

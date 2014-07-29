@@ -195,31 +195,43 @@ TitiService.prototype.getTasksForProject = function (client, project, idUser, ca
  * @param year a year like 2014
  * @param month a month from 1 to 12
  * @param idUser iduser
- * @param callback function to be called with tasks array
+ * @param callback function to be called with the array. It calls with an array of date : numberofhours
  */
 TitiService.prototype.getHoursMapForMonth = function (year, month, idUser, callback, callbackError) {
 
-    var numDays=/9|4|6|11/.test(month)?30:month=2?(!(year%4)&&year%100)||!(year%400)?29:28:31;
-    var startDate="01/"+((month<10)?("0"+month):month)+"/"+year;
+    var numDays=/9|4|6|11/.test(month)?30:month==2?(!(year%4)&&year%100)||!(year%400)?29:28:31;
+
+
+    var startDate="1/"+((month<10)?("0"+month):month)+"/"+year;
     var endDate=((numDays<10)?("0"+numDays):numDays)+"/"+((month<10)?("0"+month):month)+"/"+year;
+/*    var startDate=((month<10)?("0"+month):month)+"/01/"+year;
+ var endDate=((month<10)?("0"+month):month)+"/"+((numDays<10)?("0"+numDays):numDays)+"/"+year;
+*/
+ var filter="fecha>="+startDate+" and fecha<="+endDate+"";
 
-    filter="fecha>=\""+startDate+"\" and fecha<=\""+endDate+"\"";
-
+    console.log(filter);
     this.googleSpreadsheetService.getHours(filter, idUser, function(hours) {
         var resmap=[];
+        console.log(hours.length);
         hours.forEach(function(it) {
             //console.log(it);
             //distinct tasks: just put the ones that are not already in
-            var tmptarea=it.gsx$tarea.$t.trim();
-            if (tmptarea!="") {
-                if (allTasks.indexOf(tmptarea)<0) {
-                    allTasks.push(tmptarea);
-                }
+            var tmphour=GlobalConfiguration.parseFloat(it.gsx$horas.$t);
+
+            var fecha=it.gsx$fecha.$t;
+            //console.log(fecha);
+            if (resmap[fecha]==undefined) {
+                resmap[fecha]=tmphour;
+            } else {
+                resmap[fecha]=resmap[fecha]+tmphour;
             }
+
+
         });
-        callback(allTasks);
+        console.log(resmap);
+        callback(resmap);
     }, function(error) {
-        alert('Error recovering tasks... ');
+        alert('Error recovering hours map... ');
         alert(JSON.stringify(error));
         callbackError(error);
     });

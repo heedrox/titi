@@ -7,4 +7,11 @@ INSTALATE ESTE PROYECTO:
 - Añade titi como document root
 - Añade titi-tests como tests resource
 
+====
+
+TODO:
+- Check if webpage is accessible and say if it is not (instead of checking the wifiname, just check if .../titi/hello.txt gives back hello string)
+- Sliding better effect menu
+- Setting menu icon on top
+
 
