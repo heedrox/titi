@@ -61,7 +61,7 @@ var GlobalConfiguration = {
 
     DUMMY : 1
 
-}
+};
 
 
 GlobalConfiguration.isLoggedIn = function() {
@@ -70,7 +70,7 @@ GlobalConfiguration.isLoggedIn = function() {
     } else {
         return true;
     }
-}
+};
 
 GlobalConfiguration.getAccessToken = function() {
     if (localStorage[GlobalConfiguration.LOCALSTORAGE_GPLUSCODE_ACCESSTOKEN]!=undefined) {
@@ -78,14 +78,14 @@ GlobalConfiguration.getAccessToken = function() {
     } else {
         return undefined;
     }
-}
+};
 
 GlobalConfiguration.setAccessToken = function(gplusdata) {
     localStorage[GlobalConfiguration.LOCALSTORAGE_GPLUSCODE_ACCESSTOKEN]=JSON.stringify(gplusdata);
     if (gplusdata.refresh_token!=undefined) { //if a refresh token comes, then we set it outside
         GlobalConfiguration.setRefreshToken(gplusdata.refresh_token);
     }
-}
+};
 
 GlobalConfiguration.getRefreshToken = function() {
     if (localStorage[GlobalConfiguration.LOCALSTORAGE_GPLUSCODE_REFRESHTOKEN]!=undefined) {
@@ -93,7 +93,7 @@ GlobalConfiguration.getRefreshToken = function() {
     } else {
         return undefined;
     }
-}
+};
 
 /**
  * The refresh token is the token you should use to get a new access token when it expires
@@ -102,14 +102,14 @@ GlobalConfiguration.getRefreshToken = function() {
  */
 GlobalConfiguration.setRefreshToken = function(data) {
     localStorage[GlobalConfiguration.LOCALSTORAGE_GPLUSCODE_REFRESHTOKEN]=JSON.stringify(data);
-}
+};
 
 GlobalConfiguration.logout = function() {
     Object.keys(localStorage)
         .forEach(function(key){
             localStorage.removeItem(key);
         });
-}
+};
 
 /**
  * Clears Access Token AND Refresh Token
@@ -117,11 +117,11 @@ GlobalConfiguration.logout = function() {
 GlobalConfiguration.clearAccessToken = function() {
     localStorage.removeItem(GlobalConfiguration.LOCALSTORAGE_GPLUSCODE_ACCESSTOKEN);
     localStorage.removeItem(GlobalConfiguration.LOCALSTORAGE_GPLUSCODE_REFRESHTOKEN);
-}
+};
 
 GlobalConfiguration.showError = function(error) {
     alert('WOW GENERAL ERROR: '+error);
-}
+};
 
 GlobalConfiguration.createRecurrentLoginCheck = function() {
     var gps=new GooglePlusService();
@@ -138,11 +138,11 @@ GlobalConfiguration.createRecurrentLoginCheck = function() {
         alert(JSON.stringify(error));
     });
 
-}
+};
 
 /**
  * Returns the logged in user (who am i) in object (chosen by the user in the select form)
- * @returns user object, with id and name
+ * @returns object user object, with id and name
  */
 GlobalConfiguration.getUser = function() {
     if (localStorage[GlobalConfiguration.LOCALSTORAGE_USER]!=undefined) {
@@ -150,11 +150,16 @@ GlobalConfiguration.getUser = function() {
     } else {
         return undefined;
     }
-}
+};
 
+/**
+ * Sets user
+ * @param user
+ */
 GlobalConfiguration.setUser = function(user) {
     localStorage[GlobalConfiguration.LOCALSTORAGE_USER]=JSON.stringify(user);
-}
+};
+
 /************************ PROJECTS *****************************/
 GlobalConfiguration.hasProjectsDefined = function() {
     var projects = GlobalConfiguration.getProjects();
@@ -168,7 +173,7 @@ GlobalConfiguration.hasProjectsDefined = function() {
         return false;
     }
     return true;
-}
+};
 
 GlobalConfiguration.getProjects = function() {
     if (localStorage[GlobalConfiguration.LOCALSTORAGE_PROJECTS]!=undefined) {
@@ -176,7 +181,7 @@ GlobalConfiguration.getProjects = function() {
     } else {
         return undefined;
     }
-}
+};
 
 GlobalConfiguration.addProject = function(project) {
     var tmp=GlobalConfiguration.getProjects();
@@ -185,7 +190,7 @@ GlobalConfiguration.addProject = function(project) {
         tmp.push(project);
     }
     GlobalConfiguration.setProjects(tmp);
-}
+};
 
 GlobalConfiguration.removeProject = function(project) {
     var tmp=GlobalConfiguration.getProjects();
@@ -195,17 +200,17 @@ GlobalConfiguration.removeProject = function(project) {
         tmp.splice(index, 1);
     }
     GlobalConfiguration.setProjects(tmp);
-}
+};
 
 GlobalConfiguration.getAjaxHeaders = function() {
     return { 'Authorization' : 'Bearer '+GlobalConfiguration.getAccessToken().access_token };
-}
+};
 
 
 GlobalConfiguration.parseFloat = function(number) {
     number=number.replace(",",".");
     return parseFloat(number);
-}
+};
 
 /**
  * Sets projects into localstorage
@@ -213,7 +218,7 @@ GlobalConfiguration.parseFloat = function(number) {
  */
 GlobalConfiguration.setProjects = function(projects) {
     localStorage[GlobalConfiguration.LOCALSTORAGE_PROJECTS]=JSON.stringify(projects);
-}
+};
 
 /**
  * Gets CLIENT_ID from configuration.
@@ -228,7 +233,7 @@ GlobalConfiguration.getClientID = function() {
     //} else {
     return GlobalConfiguration.CLIENT_ID;
     //}
-}
+};
 
 /**
  * Gets CLIENT_SECRET from configuration.
@@ -242,7 +247,7 @@ GlobalConfiguration.getClientSecret = function() {
 //    } else {
     return GlobalConfiguration.CLIENT_SECRET;
 //    }
-}
+};
 
 
 
@@ -262,21 +267,47 @@ GlobalConfiguration.isPhoneGap = function() {
         return true;
     }
     return false;
-}
+};
+
+/**
+ * Returns if we are in a small screen based on the size of the browser
+ * (window.width<=992?)
+ * @returns {boolean}
+ */
+GlobalConfiguration.isSmallScreen = function() {
+    return ($(window).width()<=992);
+};
 
 /** EXTENDING JQUERY **/
+
+/**
+ * Function to get a parameter from the url (location.search)
+ * @param name
+ * @returns {string}
+ */
 $.urlParam = function(name){
     if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
         return decodeURIComponent(name[1]);
-}
+};
 
 /** EXTENDING JQUERY **/
+/**
+ * Function to get a parameter from the url, when sending the url as "pajar"
+ * @param name
+ * @param pajar
+ * @returns {string}
+ */
 $.valueFromStringParam = function(name,pajar){
     if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(pajar))
         return decodeURIComponent(name[1]);
-}
+};
 
 /** DATE FORMATINNG **/
+/**
+ * Function to format in DD/MM/YYYY
+ * @param d
+ * @returns {string}
+ */
 $.dateFormat = function(d) {
     var m_names = new Array("01", "02", "03",
         "04", "05", "06", "07", "08", "09",
@@ -287,13 +318,15 @@ $.dateFormat = function(d) {
     var curr_year = d.getFullYear();
     return(curr_date + "/" + m_names[curr_month]+ "/" + curr_year);
 
-}
+};
 
 
-
+/**
+ * The global function when called ondeviceready from phonegap or $().ready in ordinary web
+ */
 GlobalConfiguration.onDeviceReady = function() {
 
-    $('#logout').off("click");
+
     $('#logout').click(function() {
         if (confirm('Confirma que deseas borrar todos los datos asociados a este ordenador')) {
             GlobalConfiguration.logout();
@@ -334,7 +367,91 @@ GlobalConfiguration.onDeviceReady = function() {
     },1000);
 
     /* END JQUERY KNOB */
-}
+
+    /**
+     * Sliding menu in apps; overwrites AdminLTE/app.js:18
+     */
+    $("[data-toggle='offcanvas']").off("click").on("click",function(e) {
+        e.preventDefault();
+
+        //If window is small enough, enable sidebar push menu
+        if (GlobalConfiguration.isSmallScreen()) {
+
+            //when menu is shown: .row-offcanvas hasclass active and relative. And removeClass collapse-left and strech
+            //whem nenu is hidden: the other way around
+            $('.row-offcanvas').removeClass('active'); //left:220px;
+            $('.row-offcanvas').removeClass("relative"); //position:relative
+            $('.left-side').css("z-index",10);
+            $('.left-side').css("top","99px");
+
+            //menu is hidden => show menu
+            if ($('.left-side').hasClass("collapse-left")) {
+
+                $('.left-side').animate({left:0}, "fast",function() {
+                    $('.left-side').removeClass("collapse-left");
+                    $('#menuOverlayScreenDeactivater').show();
+                });
+
+            } else {
+                //menu is shown => hide menu
+                $('.left-side').animate({left:-220}, "fast",function() {
+                    $('.left-side').addClass("collapse-left");
+                    $('#menuOverlayScreenDeactivater').hide();
+                });
+
+            }
+
+        } else {
+            //BIG SCREENS : enable content streching normal
+            $('.left-side').toggleClass("collapse-left");
+            $(".right-side").toggleClass("strech");
+            $('.left-side').css("top",""); //default to normal
+        }
+    });
+
+    //We "overlap" the menu better than being in the left, when in small screens. In big screens, we leave it as it is
+    var recalculateMenus=function() {
+        if (GlobalConfiguration.isSmallScreen()) {
+            //in small screens, we make it overlap => we always take off the menu
+            $('.left-side').removeClass('collapse-left').addClass('collapse-left');
+            $('.right-side').removeClass('strech').addClass('strech');
+
+            $('.row-offcanvas').removeClass('active');
+            $('.row-offcanvas').removeClass("relative");
+        } else {
+            //in big screens, we leave it is it is by default
+            //if menu is not shown
+
+            $('.left-side').css("left","");
+            if (parseInt($('.left-side').css("left").replace("px","")) < 0 ) {
+                //$('.left-side').css("left","-220px");
+                $('.left-side').removeClass('collapse-left').addClass('collapse-left');
+                $('.right-side').removeClass('strech').addClass('strech');
+            } else {
+                //$('.left-side').css("left","0px");
+                $('.left-side').removeClass("collapse-left");
+                $(".right-side").removeClass("strech");
+            }
+        }
+    };
+    recalculateMenus(); //we invoke it the first time app is loaded
+
+    //If resizing, recalculate again
+    $(window).on("resize", function() {
+        recalculateMenus();
+    });
+
+    //When clicking the menu links, the menu has to disappear
+    $('ul.sidebar-menu li a').on("click", function(e) {
+        //only in small screens and if the menu is shown
+        if (GlobalConfiguration.isSmallScreen()) {
+            $("[data-toggle='offcanvas']").trigger("click");
+        }
+    });
+
+
+
+};
 
 /********* STARTING POINT ***************/
 var currentController;
@@ -345,11 +462,11 @@ if (GlobalConfiguration.isPhoneGap()) {
     $(window).load(function() {
         GlobalConfiguration.onDeviceReady();
     });
-}
+};
 
 function TitiController() {
 
-}
+};
 
 TitiController.goto = function(ctl, args) {
     var ctls=["HorasCtl","LoginCtl","SettingsCtl", "ResumenCtl"];
@@ -363,4 +480,4 @@ TitiController.goto = function(ctl, args) {
         currentController.setArgs(args);
     }
     currentController.execute();
-}
+};

@@ -112,11 +112,11 @@ ResumenCtl.prototype.paintCalendar = function() {
             }
 
             //Add hover support for touch devices
-            $(this).off("touchstart").off("touchend");
+            $(this).off("touchstart").off("touchend touchcancel");
 
             $(this).on('touchstart', function() {
                 $(this).addClass('hover');
-            }).on('touchend', function() {
+            }).on('touchend touchcancel', function() {
                 $(this).removeClass('hover');
             });
         });

@@ -10,8 +10,9 @@ INSTALATE ESTE PROYECTO:
 ====
 
 TODO:
+- In resumen, mark the day we are at
+- In resumen, when days haven't comed yet, still in white, not red.
 - Check if webpage is accessible and say if it is not (instead of checking the wifiname, just check if .../titi/hello.txt gives back hello string)
-- Sliding better effect menu
-- Setting menu icon on top
+- Setting menu icon on top, instead of two line menu in small screens
 
 
