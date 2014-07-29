@@ -382,7 +382,7 @@ GlobalConfiguration.onDeviceReady = function() {
             $('.row-offcanvas').removeClass('active'); //left:220px;
             $('.row-offcanvas').removeClass("relative"); //position:relative
             $('.left-side').css("z-index",10);
-            $('.left-side').css("top","99px");
+            $('.left-side').css("top",($('.header').offset().top+$('.header').height())+"px");
 
             //menu is hidden => show menu
             if ($('.left-side').hasClass("collapse-left")) {
@@ -390,6 +390,10 @@ GlobalConfiguration.onDeviceReady = function() {
                 $('.left-side').animate({left:0}, "fast",function() {
                     $('.left-side').removeClass("collapse-left");
                     $('#menuOverlayScreenDeactivater').show();
+                    $('html, body').css({
+                        'overflow': 'hidden',
+                        'height': '100%'
+                    })
                 });
 
             } else {
@@ -397,6 +401,10 @@ GlobalConfiguration.onDeviceReady = function() {
                 $('.left-side').animate({left:-220}, "fast",function() {
                     $('.left-side').addClass("collapse-left");
                     $('#menuOverlayScreenDeactivater').hide();
+                    $('html, body').css({
+                        'overflow': 'auto',
+                        'height': 'auto'
+                    })
                 });
 
             }
@@ -406,7 +414,10 @@ GlobalConfiguration.onDeviceReady = function() {
             $('.left-side').toggleClass("collapse-left");
             $(".right-side").toggleClass("strech");
             $('.left-side').css("top",""); //default to normal
+            $('#menuOverlayScreenDeactivater').hide(); //oculto el layer si esta mostrandose. Esto pasa cuando despliego el menu en pequeno y maximizo. el layer se queda
         }
+
+
     });
 
     //We "overlap" the menu better than being in the left, when in small screens. In big screens, we leave it as it is
@@ -432,6 +443,7 @@ GlobalConfiguration.onDeviceReady = function() {
                 $('.left-side').removeClass("collapse-left");
                 $(".right-side").removeClass("strech");
             }
+            $('#menuOverlayScreenDeactivater').hide(); //oculto el layer si esta mostrandose. Esto pasa cuando despliego el menu en pequeno y maximizo. el layer se queda
         }
     };
     recalculateMenus(); //we invoke it the first time app is loaded
@@ -442,14 +454,25 @@ GlobalConfiguration.onDeviceReady = function() {
     });
 
     //When clicking the menu links, the menu has to disappear
-    $('ul.sidebar-menu li a').on("click", function(e) {
+    $('ul.sidebar-menu li').on("click", function(e) {
         //only in small screens and if the menu is shown
         if (GlobalConfiguration.isSmallScreen()) {
-            $("[data-toggle='offcanvas']").trigger("click");
+            $('.left-side').animate({left:-220}, "fast",function() {
+                $('.left-side').addClass("collapse-left");
+                $('#menuOverlayScreenDeactivater').hide();
+                $('html,body').css({
+                    'overflow': 'auto',
+                    'height': 'auto'
+                })
+            });
+
         }
     });
 
-
+    //Disable logo link
+    $('a.logo').on("click", function(e) {
+        e.preventDefault();
+    })
 
 };
 

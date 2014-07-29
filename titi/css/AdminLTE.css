@@ -480,6 +480,7 @@ body > .header .logo .icon {
   body > .header {
     position: relative;
   }
+  /*
   body > .header .logo,
   body > .header .navbar {
     width: 100%;
@@ -489,6 +490,8 @@ body > .header .logo .icon {
   body > .header .navbar {
     margin: 0;
   }
+  */
+
   body.fixed > .header {
     position: fixed;
   }

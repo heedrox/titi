@@ -32,3 +32,14 @@ tr.resumenHeader, td.outofmonth { background-color:#f3f4f5; }
 #ResumenCalendar th, #ResumenCalendar td { text-align: center !important; }
 #ResumenCalendar td { cursor:pointer; }
 #ResumenCalendar td:hover, #ResumenCalendar td.hover { background-color:#f3f4f5; }
+
+/*OVERWRITES ADMINLTE.CSS*/
+.header .navbar { margin-left:0px !important; background-color:#367fa9 !important }
+
+body > .header .logo { float:none !important; width:100% !important; }
+body .navbar-btn { position:absolute !important; }
+.navbar-header { float: none !important; }
+header.header { position: fixed !important; }
+.right-side { margin-top:50px; }
+
+
